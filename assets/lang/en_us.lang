@@ -1,0 +1,94 @@
+mod.minimap.name = Xaero's Minimap
+mod.minimap.description = A Weft recreation of Xaero's Minimap: a rotating terrain map, waypoints, an entity radar, cave mode and a fullscreen map.
+    Made entirely with the public mod SDK.
+mod.minimap.authors = Cloud
+mod.minimap.url = https://github.com/Weft-Rust/Weft
+
+# HUD elements (shown in Settings > Arrange HUD)
+hud.element.minimap.minimap = Minimap
+hud.element.minimap.big_map = Fullscreen map
+
+# Settings > Mod Settings
+config.minimap.enabled = Enabled
+config.minimap.size = Size
+config.minimap.shape = Shape
+config.minimap.location = Minimap corner
+config.minimap.map_scale = Map size
+config.minimap.zoom = Minimap zoom
+config.minimap.zoom.tooltip = How many blocks fit in one map pixel.
+config.minimap.lock_north = Lock minimap north
+config.minimap.coords = Display coordinates
+config.minimap.show_dimension = Display dimension
+config.minimap.show_facing = Display facing angle
+config.minimap.show_time = Display game time
+config.minimap.show_waypoints = On-map waypoints
+config.minimap.show_radar = Entity radar
+config.minimap.show_grid = Chunk grid
+config.minimap.cave_mode = Cave mode
+config.minimap.cave_depth = Cave mode depth
+config.minimap.big_zoom = Fullscreen map zoom
+config.minimap.waypoints = Waypoint data
+
+# Controls
+key.minimap.toggle = Toggle minimap
+key.minimap.big_map = Fullscreen map
+key.minimap.waypoints = Open waypoints
+key.minimap.zoom_in = Zoom in (wheel up)
+key.minimap.zoom_out = Zoom out (wheel down)
+key.minimap.enlarge = Enlarge minimap (hold)
+key.minimap.quick_waypoint = Quick waypoint
+key.minimap.grid = Toggle chunk grid
+key.minimap.radar = Toggle entity radar
+key.minimap.waypoints_on_map = Toggle on-map waypoints
+key.minimap.cave_mode = Toggle cave mode
+
+# Big white pixel coordinates under the map, like Xaero's
+color.minimap_coords = {#ffffff}
+
+# Common labels
+minimap.on = On
+minimap.off = Off
+minimap.size.small = Small
+minimap.size.medium = Medium
+minimap.size.large = Large
+minimap.shape.square = Square
+minimap.shape.circle = Circle
+
+# Settings screen
+minimap.settings.title = Minimap Settings
+minimap.settings.enabled = Enabled
+minimap.settings.cycle_size = Size
+minimap.settings.cycle_shape = Shape
+minimap.settings.cycle_location = Corner
+minimap.location.tl = Top left
+minimap.location.tr = Top right
+minimap.location.bl = Bottom left
+minimap.location.br = Bottom right
+minimap.settings.lock_north = Lock North
+minimap.settings.coords = Coordinates
+minimap.settings.dimension = Dimension
+minimap.settings.facing = Facing
+minimap.settings.time = Game time
+minimap.settings.waypoints = On-map waypoints
+minimap.settings.radar = Entity radar
+minimap.settings.grid = Chunk grid
+minimap.settings.cave = Cave mode
+minimap.settings.close = Close
+
+# Waypoint screen
+minimap.waypoints.title = Waypoints
+minimap.waypoints.hint = Select a row, then rename or recolor it. New waypoints appear at your position.
+minimap.waypoints.add = Add at position
+minimap.waypoints.rename = Rename selected
+minimap.waypoints.select = Select
+minimap.waypoints.color = Color
+minimap.waypoints.delete = Delete
+minimap.waypoints.close = Close
+minimap.waypoints.empty = (empty)
+minimap.waypoint.label = {0}  {1}m
+
+# Fullscreen map
+minimap.map.title = Map
+minimap.map.compass = N
+minimap.map.help = M to close  ·  +/- to zoom the minimap  ·  B for waypoints
+minimap.map.close = Close map
