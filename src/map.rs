@@ -443,11 +443,13 @@ fn draw_entities(g: &mut Grid, c: &Client, cx: f64, cz: f64, facing: f64, player
     }
 }
 
-fn draw_waypoints(g: &mut Grid, cx: f64, cz: f64, facing: f64, dim: u64) {
+fn draw_waypoints(g: &mut Grid, cx: f64, cz: f64, facing: f64, _dim: u64) {
     if !settings::SHOW_WAYPOINTS.get() {
         return;
     }
-    for wp in waypoints::in_dimension(dim) {
+    // Show every saved waypoint, including death points and ones from other
+    // dimensions, as requested.
+    for wp in waypoints::all() {
         let Some((col, row)) = project(g, cx, cz, facing, wp.x, wp.z) else { continue };
         for (dx, dy) in [(0, 0), (-1, 0), (1, 0), (0, -1), (0, 1)] {
             g.set(col + dx, row + dy, wp.color);

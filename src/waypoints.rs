@@ -140,7 +140,7 @@ pub fn add(name: &str, x: i32, y: i32, z: i32, dim: u64) {
 }
 
 pub fn add_death(x: i32, y: i32, z: i32, dim: u64) {
-    add("Death", x, y, z, dim);
+    add("Death point", x, y, z, dim);
 }
 
 pub fn delete(index: usize) -> bool {

@@ -2,7 +2,7 @@ mod.minimap.name = Xaero's Minimap
 mod.minimap.description = A Weft recreation of Xaero's Minimap: a rotating terrain map, waypoints, an entity radar, cave mode and a fullscreen map.
     Made entirely with the public mod SDK.
 mod.minimap.authors = Cloud
-mod.minimap.url = https://github.com/Weft-Rust/Weft
+mod.minimap.url = https://github.com/Mondee0/Xaero-s-Minimap
 
 # HUD elements (shown in Settings > Arrange HUD)
 hud.element.minimap.minimap = Minimap
