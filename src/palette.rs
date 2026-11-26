@@ -121,8 +121,12 @@ pub fn waypoint_rgb(idx: u8) -> u32 {
 /// other thin things that hide the ground rather than being it.
 pub fn surface_base(state: u32) -> Option<u8> {
     let full = name_of(entry_kind::BLOCK, state);
-    let name = full.split('#').next().unwrap_or(full);
+    // State properties are printed as `[key=value,...]` after the name.
+    let name = full.split(['#', '[']).next().unwrap_or(full);
     let path = name.split_once(':').map_or(name, |(_, p)| p);
+    let lower = path.to_ascii_lowercase();
+
+    // Thin things sit on the ground rather than being it.
     if matches!(
         path,
         "tall_grass" | "sapling" | "torch" | "lever" | "redstone_torch" | "comparator"
@@ -130,46 +134,94 @@ pub fn surface_base(state: u32) -> Option<u8> {
     ) {
         return None;
     }
-    Some(match path {
-        "grass" => B_GRASS,
-        "snowy_grass" => B_GRASS_LIGHT,
-        "oak_leaves" | "leaves" => B_LEAVES,
-        "birch_leaves" => B_LEAVES_LIGHT,
-        "spruce_leaves" => B_LEAVES_DARK,
-        "mossy_cobblestone" | "slime_block" => B_MOSS,
-        "dirt" | "farmland" => B_DIRT,
-        "clay" => B_STONE_LIGHT,
-        "stone" | "stone_bricks" => B_STONE,
-        "bricks" => B_RED,
-        "sand" => B_SAND,
-        "sandstone" => B_SANDSTONE,
-        "gravel" => B_GRAVEL,
-        "cobblestone" => B_COBBLE,
-        "water" => B_WATER,
-        "ice" => B_ICE,
-        "snow" => B_SNOW,
-        "oak_log" | "birch_log" | "spruce_log" | "bark" => B_BARK,
+
+    // Every block that ships with `base`, by its registered name.
+    let explicit = match path {
+        "grass" => Some(B_GRASS),
+        "snowy_grass" => Some(B_GRASS_LIGHT),
+        "dirt" | "farmland" => Some(B_DIRT),
+        "stone" | "stone_bricks" => Some(B_STONE),
+        "cobblestone" | "mossy_cobblestone" => Some(B_COBBLE),
+        "sand" => Some(B_SAND),
+        "sandstone" => Some(B_SANDSTONE),
+        "gravel" => Some(B_GRAVEL),
+        "clay" => Some(B_STONE_LIGHT),
+        "oak_leaves" | "leaves" => Some(B_LEAVES),
+        "birch_leaves" => Some(B_LEAVES_LIGHT),
+        "spruce_leaves" => Some(B_LEAVES_DARK),
+        "oak_log" | "birch_log" | "spruce_log" | "bark" => Some(B_BARK),
         "oak_planks" | "birch_planks" | "spruce_planks" | "crafting_table" | "chest"
         | "furnace" | "woodcutter" | "ladder" | "oak_door" | "dispenser" | "piston"
-        | "piston_head" | "sticky_piston" | "sticky_piston_head" | "bed" | "beds" => B_PLANKS,
-        "cactus" | "sugar_cane" => B_LEAVES_LIGHT,
-        // Flowers and crops stay close to grass: bright single-block specks
-        // make the map look like confetti instead of terrain.
-        "wheat" | "dandelion" | "rose" => B_GRASS_LIGHT,
-        "lava" => B_LAVA,
-        "obsidian" | "redstone_block" | "redstone_lamp" | "golden_lamp" => B_NETHER,
-        "wool" | "floater" => B_END,
+        | "piston_head" | "sticky_piston" | "sticky_piston_head" | "bed" | "beds"
+        | "helm" | "rotor" | "music_player" | "assembler" | "anchor" => Some(B_PLANKS),
+        "cactus" | "sugar_cane" => Some(B_LEAVES_LIGHT),
+        "dandelion" | "rose" | "wheat" => Some(B_GRASS_LIGHT),
+        "snow" => Some(B_SNOW),
+        "ice" | "glass" => Some(B_ICE),
+        "water" => Some(B_WATER),
+        "lava" => Some(B_LAVA),
+        "obsidian" | "nether" => Some(B_NETHER),
+        "wool" | "floater" => Some(B_END),
+        "bricks" | "redstone_block" => Some(B_RED),
         "coal_block" | "coal_ore" | "iron_block" | "iron_ore" | "diamond_block"
-        | "diamond_ore" => B_ORE,
-        "gold_block" | "gold_ore" | "glowstone" => B_YELLOW,
-        "redstone_ore" | "redstone" => B_DIRT,
-        _ => {
-            // Unknown blocks get one of four stable earth tones rather than a
-            // random color from the whole palette.
-            let h = full.bytes().fold(0u32, |a, b| a.wrapping_mul(31).wrapping_add(b as u32));
-            [B_GRASS, B_DIRT, B_STONE, B_LEAVES][(h % 4) as usize]
-        }
-    })
+        | "diamond_ore" => Some(B_ORE),
+        "gold_block" | "gold_ore" | "glowstone" => Some(B_YELLOW),
+        "redstone_ore" | "redstone" | "redstone_lamp" | "golden_lamp" => Some(B_NETHER),
+        "slime_block" => Some(B_MOSS),
+        _ => None,
+    };
+    if explicit.is_some() {
+        return explicit;
+    }
+
+    // Generic patterns so blocks added by other mods still get a sensible color.
+    let pattern = if lower.contains("water") || lower.contains("liquid") {
+        Some(B_WATER)
+    } else if lower.contains("lava") || lower.contains("fire") || lower.contains("magma") {
+        Some(B_LAVA)
+    } else if lower.contains("leaves") || lower.contains("vine") || lower.contains("foliage") {
+        Some(B_LEAVES)
+    } else if lower.contains("log") || lower.contains("bark") {
+        Some(B_BARK)
+    } else if lower.contains("plank") || lower.contains("wood") || lower.contains("door") {
+        Some(B_PLANKS)
+    } else if lower.contains("ore") || lower.contains("iron") || lower.contains("diamond") {
+        Some(B_ORE)
+    } else if lower.contains("cobble") || lower.contains("stone") || lower.contains("rock") {
+        Some(B_STONE)
+    } else if lower.contains("sand") {
+        Some(B_SAND)
+    } else if lower.contains("dirt") || lower.contains("soil") || lower.contains("mud") {
+        Some(B_DIRT)
+    } else if lower.contains("grass") {
+        Some(B_GRASS)
+    } else if lower.contains("snow") || lower.contains("ice") || lower.contains("frost") {
+        Some(B_SNOW)
+    } else if lower.contains("flower") || lower.contains("crop") || lower.contains("seed") {
+        Some(B_GRASS_LIGHT)
+    } else if lower.contains("glass") {
+        Some(B_ICE)
+    } else if lower.contains("gold") || lower.contains("glow") || lower.contains("yellow") {
+        Some(B_YELLOW)
+    } else if lower.contains("red") || lower.contains("brick") {
+        Some(B_RED)
+    } else if lower.contains("nether") || lower.contains("obsidian") {
+        Some(B_NETHER)
+    } else if lower.contains("end") || lower.contains("wool") || lower.contains("white") {
+        Some(B_END)
+    } else if lower.contains("slime") || lower.contains("moss") {
+        Some(B_MOSS)
+    } else {
+        None
+    };
+    if pattern.is_some() {
+        return pattern;
+    }
+
+    // Last resort: a stable, distinct color for every unknown block name, so
+    // no block silently falls back to looking like plain terrain.
+    let h = full.bytes().fold(0u32, |a, b| a.wrapping_mul(31).wrapping_add(b as u32));
+    Some((h % 32) as u8)
 }
 
 /// Sprite key of an entity kind, or `None` for things without a face sprite.

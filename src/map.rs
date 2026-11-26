@@ -6,7 +6,7 @@
 use std::collections::HashMap;
 use std::sync::{LazyLock, RwLock};
 
-use weft_sdk::{Client, abi::BlockPos};
+use weft_sdk::{Block, Client, abi::BlockPos, block_of};
 
 use crate::icons::{self, ICON_SIZE};
 use crate::palette::{
@@ -18,10 +18,16 @@ use crate::{settings, state, waypoints};
 
 static COLOR_CACHE: LazyLock<RwLock<HashMap<u32, Option<u8>>>> =
     LazyLock::new(|| RwLock::new(HashMap::new()));
+static WATER: Block = Block::named("base:water");
 
 fn color_of(state_id: u32) -> Option<u8> {
     if state_id == 0 {
         return None;
+    }
+    // Liquid states don't always resolve to a useful name, so match the block
+    // id first and force the water color.
+    if block_of(state_id) == WATER.id() {
+        return Some(B_WATER);
     }
     if let Some(c) = COLOR_CACHE.read().unwrap().get(&state_id) {
         return *c;
